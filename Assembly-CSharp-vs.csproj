@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProductVersion>10.0.20506</ProductVersion>
+	<SchemaVersion>2.0</SchemaVersion>
+	<ProjectGuid>{D552519D-3C71-D715-6D5A-66230ADD77EB}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<AppDesignerFolder>Properties</AppDesignerFolder>
+	<RootNamespace></RootNamespace>
+	<AssemblyName>Assembly-CSharp</AssemblyName>
+	<TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+	<FileAlignment>512</FileAlignment>
+	<BaseDirectory>Assets</BaseDirectory>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>Temp\bin\Debug\</OutputPath>
+	<DefineConstants>DEBUG;TRACE;UNITY_4_6_3;UNITY_4_6;UNITY_STANDALONE_WIN;ENABLE_MICROPHONE;ENABLE_TEXTUREID_MAP;ENABLE_UNITYEVENTS;ENABLE_NEW_HIERARCHY ;ENABLE_AUDIO_FMOD;UNITY_STANDALONE;ENABLE_TERRAIN;ENABLE_SUBSTANCE;ENABLE_GENERICS;INCLUDE_IL2CPP;INCLUDE_WP8SUPPORT;ENABLE_MOVIES;ENABLE_WWW;ENABLE_IMAGEEFFECTS;ENABLE_4_6_FEATURES;INCLUDE_WP_BLUE_SUPPORT;ENABLE_WEBCAM;INCLUDE_METROSUPPORT;RENDER_SOFTWARE_CURSOR;ENABLE_NETWORK;ENABLE_PHYSICS;UNITY5_SCRIPTING_IN_UNITY4;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_2D_PHYSICS;ENABLE_SHADOWS;ENABLE_AUDIO;ENABLE_NAVMESH_CARVING;ENABLE_DUCK_TYPING;ENABLE_SINGLE_INSTANCE_BUILD_SETTING;ENABLE_MONO;ENABLE_PROFILER;UNITY_EDITOR;UNITY_EDITOR_WIN</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+	<DebugType>pdbonly</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>Temp\bin\Release\</OutputPath>
+	<DefineConstants>TRACE</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<NoWarn>0169</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+	<Reference Include="System" />
+    <Reference Include="System.XML" />
+	<Reference Include="System.Core" />
+	<Reference Include="System.Xml.Linq" />
+	<Reference Include="UnityEngine">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	</Reference>
+	<Reference Include="UnityEditor">
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	</Reference>
+  </ItemGroup>
+  <ItemGroup>
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Base\DebuggableBehavior.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Base\JsonBlobLoaderBase.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Base\ManagerBase.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Base\UGUIPresenterBase.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Business\IEnumerableExtensions.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\ControlManager.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\DoorControl.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\DumbProjectile.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\MovementControls.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\PlayerControlSystem.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\WeaponClassification.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Controls\WeaponControls.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Events\GameEventController.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\GUI\PlayerHeadsUpDisplay.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\Ambassador.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\AudioManager.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\DamageTrigger.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\KillableEntity.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\Maestro.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\PersistentSingularObject.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\PlayerCharacterControls.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\WorldGenerator.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\AsvarduilAccelerometer.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\AsvarduilControlAxis.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\Lockout.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Events\GameEvent.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Events\GameEventHook.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSON.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONArray.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONBinaryTag.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONClass.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONData.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONExtensions.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONLazyCreator.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONNode.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\System\HealthSystem.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\IJsonSavable.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\ISuspendable.cs" />
+     <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
+     <None Include="Assets\Standard Assets\Skyboxes\_skybox info.txt" />
+ <Reference Include="Assembly-UnityScript-firstpass">
+ <HintPath>C:/Users/andre_000/Desktop/Unity Works/Procedural Metroidvania/Library/ScriptAssemblies/Assembly-UnityScript-firstpass.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.UI">
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.3/UnityEngine.UI.dll</HintPath>
+ </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="Assembly-CSharp-firstpass-vs.csproj">
+      <Project>{382F8529-51FB-4490-5DC7-A6EDDB002453}</Project>      <Name>Assembly-CSharp-firstpass-vs</Name>    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	   Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  
+</Project>
