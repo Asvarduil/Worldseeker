@@ -5,7 +5,7 @@
 	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
 	<ProductVersion>10.0.20506</ProductVersion>
 	<SchemaVersion>2.0</SchemaVersion>
-	<ProjectGuid>{D552519D-3C71-D715-6D5A-66230ADD77EB}</ProjectGuid>
+	<ProjectGuid>{0777B5D5-4CE9-7EC9-FB2F-6460451EBCEB}</ProjectGuid>
 	<OutputType>Library</OutputType>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<RootNamespace></RootNamespace>
@@ -67,7 +67,8 @@
      <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\Maestro.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\PersistentSingularObject.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\PlayerCharacterControls.cs" />
-     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\Systems\WorldGenerator.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\World Generation\RoomDatabase.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Behaviors\World Generation\WorldGenerator.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\AsvarduilAccelerometer.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\AsvarduilControlAxis.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\Controls\Lockout.cs" />
@@ -82,6 +83,10 @@
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONLazyCreator.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\JSON\JSONNode.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\System\HealthSystem.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Biome.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Door.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Room.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\RoomDoor.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\IJsonSavable.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\ISuspendable.cs" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
@@ -92,9 +97,9 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Assembly-CSharp-firstpass.csproj">
-      <Project>{382F8529-51FB-4490-5DC7-A6EDDB002453}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
+      <Project>{E4F858E3-8BF3-EB9B-EBF2-F75382B8CB96}</Project>      <Name>Assembly-CSharp-firstpass</Name>    </ProjectReference>
     <ProjectReference Include="Assembly-UnityScript-firstpass.unityproj">
-      <Project>{66C15901-D9BA-A41C-4EFD-2A05B00B8A13}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
+      <Project>{00C7E0EF-8460-15AF-9072-AAC36A42179F}</Project>      <Name>Assembly-UnityScript-firstpass</Name>    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
