@@ -1,5 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
 using System.Collections;
+using UnityEngine;
 
 public enum MovementType
 {
@@ -17,7 +18,7 @@ public class MovementControls : DebuggableBehavior, ISuspendable
 
     public float WalkSpeed = 10.0f;
     public float JumpForce = 20.0f;
-    public float JumpSmoothing = 0.95f;
+    public float JumpSmoothing = 0.25f;
     public MovementType MovementType = MovementType.Grounded;
        
     // Mouse Look variables...
@@ -43,7 +44,30 @@ public class MovementControls : DebuggableBehavior, ISuspendable
 
     public bool IsGrounded
     {
-        get { return _characterController.isGrounded; }
+        get 
+        { 
+            bool isGrounded = _characterController.isGrounded;
+            if (isGrounded && MovementType != MovementType.Grounded)
+                MovementType = MovementType.Grounded;
+
+            return isGrounded;
+        }
+    }
+
+    public bool IsJumping
+    {
+        get { return MovementType == MovementType.Jumping; }
+    }
+
+    public bool IsFalling
+    {
+        get 
+        {
+            if (!IsGrounded && MovementType != MovementType.Falling)
+                MovementType = MovementType.Falling;
+
+            return MovementType == MovementType.Falling; 
+        }
     }
     
     #endregion Variables / Properties
@@ -81,45 +105,56 @@ public class MovementControls : DebuggableBehavior, ISuspendable
         _velocity = Vector3.zero;
     }
 
-    private void ApplyVelocity()
+    public void ApplyVelocity(bool useDeltaTime = true)
     {
+        if(useDeltaTime)
+            _velocity *= Time.deltaTime;
+
         _collision = _characterController.Move(_velocity);
+
+        if (MovementType == MovementType.Jumping && HitCeiling)
+        {
+            AbortJump();
+        }
+
+        if(IsGrounded)
+        {
+            _velocity.y = 0.0f;
+            MovementType = MovementType.Grounded;
+        }
     }
 
-    public void MoveCharacter(Vector3 directionalInput, bool performJump, bool useDeltaTime = true)
+    public void ProcessPlanarMovement(Vector3 directionalInput)
     {
         if (!CanControl)
             return;
 
-        float verticalForce = _velocity.y;
-
-        ApplyDirectionalInput(directionalInput);
-
-        _velocity.y = verticalForce;
-        if (performJump)
-            PerformJump();
-        else if (MovementType == MovementType.Jumping && !performJump)
-            AbortJump();
-
-        ApplyVerticalForces();
-
-        if(useDeltaTime)
-            _velocity *= Time.deltaTime;
-
-        ApplyVelocity();
-    }
-
-    private void ApplyDirectionalInput(Vector3 directionalInput)
-    {
         _velocity = (transform.TransformDirection(directionalInput) * WalkSpeed);
     }
 
-    private void PerformJump()
+    public void PerformJump()
     {
-        _velocity.y += JumpForce;
-        MovementType = MovementType.Jumping;
+        switch (MovementType)
+        {
+            case MovementType.Grounded:
+            case MovementType.Falling:
+                DebugMessage("Jumping...");
+                _velocity.y += JumpForce;
+                MovementType = MovementType.Jumping;
+                break;
 
-        DebugMessage(gameObject.name + " is now jumping.");
+            case MovementType.Jumping:
+                DebugMessage("Ascending...");
+                _velocity.y *= JumpSmoothing;
+                if(Mathf.Abs(_velocity.y - 0.0f) < 0.001f)
+                {
+                    AbortJump();
+                }
+                break;
+
+            default:
+                throw new InvalidOperationException("Unexpected movement state: " + MovementType);
+        }
     }
 
     private void AbortJump()
@@ -130,49 +165,7 @@ public class MovementControls : DebuggableBehavior, ISuspendable
         DebugMessage(gameObject.name + " is now falling.");
     }
 
-    /// <summary>
-    /// Applies jump smoothing and gravity to the given velocity.
-    /// </summary>
-    /// <param name="velocity">Velocity to apply vertical forces to.</param>
-    /// <returns>Modified velocity</returns>
-    private void ApplyVerticalForces()
-    {       
-        Vector3 modifiedVelocity = _velocity;
-
-        // If jumping, smooth the jump...
-        // Check that we haven't hit our head.
-        // Check that we haven't decelerated to a fall in a jump.
-        if (MovementType == MovementType.Jumping)
-        {
-            if (!HitCeiling)
-            {
-                modifiedVelocity.y *= JumpSmoothing;
-
-                if (Mathf.Abs(modifiedVelocity.y - 0.0f) < 0.001)
-                {
-                    DebugMessage(gameObject.name + " at top of jump; now falling.");
-                    MovementType = MovementType.Falling;
-                }
-            }
-            else
-            {
-                AbortJump();
-            }
-        }
-
-        // Check that we haven't hit the ground.
-        if (MovementType == MovementType.Falling && IsGrounded)
-        {
-            modifiedVelocity.y = 0.0f;
-            MovementType = MovementType.Grounded;
-        }
-
-        // Apply gravity at all times.
-        modifiedVelocity = modifiedVelocity + Physics.gravity;
-        DebugMessage(gameObject.name + " has a vertical velocity of " + modifiedVelocity.y + " after gravity is applied.");
-
-        _velocity = modifiedVelocity;
-    }
+    #region Rotation
 
     /// <summary>
     /// Causes the Camera to look in the direction of the given rotation.
@@ -208,6 +201,8 @@ public class MovementControls : DebuggableBehavior, ISuspendable
 
         VerticalLookBone.transform.Rotate(-_currentRotation.y, 0, 0);
     }
+
+    #endregion Rotation
 
     #endregion Methods
 }

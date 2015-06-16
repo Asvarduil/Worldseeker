@@ -17,6 +17,7 @@ public enum PlayerActionStates
     StrafeLeft,
     StrafeRight,
     Jump,
+    Falling,
     FireWeapon
 }
 
@@ -103,53 +104,81 @@ public class PlayerControlSystem : DebuggableBehavior
     private PlayerActionStates GetActionState()
     {
         var result = PlayerActionStates.Idle;
+        if (_movement.IsGrounded && (ActionState == PlayerActionStates.Falling || ActionState == PlayerActionStates.Jump))
+        {
+            JumpCount = MaxAllowedJumps;
+            result = PlayerActionStates.Idle;
+        }
 
         float walkAmount = _controls.GetAxis(WalkAxis);
         float strafeAmount = _controls.GetAxis(StrafeAxis);
 
-        bool jumping = _controls.GetAxisDown(JumpAxis);
+        bool jumpPressed = _controls.GetAxisDown(JumpAxis);
+        bool jumpReleased = _controls.GetAxisUp(JumpAxis);
 
         PlanarMotion = new Vector3(strafeAmount, 0, walkAmount);
 
-        if (walkAmount > 0)
-            result = PlayerActionStates.Walk;
-        else if (walkAmount < 0)
-            result = PlayerActionStates.Backstep;
+        if (jumpPressed
+            && ActionState != PlayerActionStates.Jump
+            && JumpLockout.CanAttempt()
+            && JumpCount > 0)
+        {
+            DebugMessage("Jump is pressed...");
 
-        if (strafeAmount > 0)
-            result = PlayerActionStates.StrafeRight;
-        else
-            result = PlayerActionStates.StrafeLeft;
-
-        if (jumping)
             result = PlayerActionStates.Jump;
+            JumpCount--;
+            JumpLockout.NoteLastOccurrence();
+        }
+        else if (jumpPressed && ActionState == PlayerActionStates.Jump)
+        {
+            DebugMessage("Still jumping...");
+
+            result = PlayerActionStates.Jump;
+        }
+        else if (jumpPressed && ActionState == PlayerActionStates.Falling)
+        {
+            result = PlayerActionStates.Falling;
+        }
+        else if (jumpReleased && ActionState == PlayerActionStates.Jump)
+        {
+            DebugMessage("Jump is released...");
+
+            result = PlayerActionStates.Falling;
+        }
+        // ...Not jumping...
+        else
+        {
+            result = PlayerActionStates.Idle;
+
+            if (walkAmount > 0)
+                result = PlayerActionStates.Walk;
+            else if (walkAmount < 0)
+                result = PlayerActionStates.Backstep;
+
+            if (strafeAmount > 0)
+                result = PlayerActionStates.StrafeRight;
+            else
+                result = PlayerActionStates.StrafeLeft;
+        }
 
         return result;
     }
 
     private void CalculateMovement()
     {
-        bool isJumping = (ActionState == PlayerActionStates.Jump)
-            && JumpCount > 0
-            && JumpLockout.CanAttempt();
+        _movement.ProcessPlanarMovement(PlanarMotion);
 
-        _movement.MoveCharacter(PlanarMotion, isJumping);
-
-        if(isJumping)
+        if (ActionState == PlayerActionStates.Jump)
         {
-            JumpLockout.NoteLastOccurrence();
-            JumpCount--;
+            _movement.PerformJump();
         }
 
-        if (_movement.IsGrounded)
-        {
-            JumpCount = MaxAllowedJumps;
-        }
+        _movement.ApplyVelocity();
     }
 
     private void CalculateAnimation()
     {
-
+        // TODO: ...
     }
 
     #endregion Methods
