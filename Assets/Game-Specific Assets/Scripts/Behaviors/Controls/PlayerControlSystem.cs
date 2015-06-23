@@ -9,18 +9,6 @@ public enum CharacterRotationAxes
     MouseY = 2
 }
 
-public enum PlayerActionStates
-{
-    Idle,
-    Walk,
-    Backstep,
-    StrafeLeft,
-    StrafeRight,
-    Jump,
-    Falling,
-    FireWeapon
-}
-
 public class PlayerControlSystem : DebuggableBehavior
 {
     #region Variables / Properties
@@ -37,7 +25,6 @@ public class PlayerControlSystem : DebuggableBehavior
     public Lockout JumpLockout;
 
     public Vector3 PlanarMotion = Vector3.zero;
-    public PlayerActionStates ActionState = PlayerActionStates.Idle;
 
     private ControlManager _controls;
 
@@ -59,11 +46,8 @@ public class PlayerControlSystem : DebuggableBehavior
     public void Update()
     {
         CalculateRotation();
-        CheckWeaponFire();
-
-        ActionState = GetActionState();
-
-        CalculateMovement();
+        GetInput();
+        PerformMovement();
         CalculateAnimation();
     }
 
@@ -101,79 +85,61 @@ public class PlayerControlSystem : DebuggableBehavior
         _weapon.Fire();
     }
 
-    private PlayerActionStates GetActionState()
+    private void GetInput()
     {
-        var result = PlayerActionStates.Idle;
-        if (_movement.IsGrounded && (ActionState == PlayerActionStates.Falling || ActionState == PlayerActionStates.Jump))
-        {
-            JumpCount = MaxAllowedJumps;
-            result = PlayerActionStates.Idle;
-        }
+        CheckWeaponFire();
 
         float walkAmount = _controls.GetAxis(WalkAxis);
         float strafeAmount = _controls.GetAxis(StrafeAxis);
 
+        PlanarMotion = new Vector3(strafeAmount, 0, walkAmount);
+        _movement.ProcessPlanarMovement(PlanarMotion);
+
         bool jumpPressed = _controls.GetAxisDown(JumpAxis);
+        bool jumpHeld = (_controls.GetAxis(JumpAxis) > 0.0f) && !jumpPressed;
         bool jumpReleased = _controls.GetAxisUp(JumpAxis);
 
-        PlanarMotion = new Vector3(strafeAmount, 0, walkAmount);
-
         if (jumpPressed
-            && ActionState != PlayerActionStates.Jump
-            && JumpLockout.CanAttempt()
-            && JumpCount > 0)
+            && !_movement.IsJumping
+            && JumpCount > 0
+            && JumpLockout.CanAttempt())
         {
-            DebugMessage("Jump is pressed...");
-
-            result = PlayerActionStates.Jump;
+            _movement.PerformJump();
             JumpCount--;
             JumpLockout.NoteLastOccurrence();
         }
-        else if (jumpPressed && ActionState == PlayerActionStates.Jump)
-        {
-            DebugMessage("Still jumping...");
-
-            result = PlayerActionStates.Jump;
-        }
-        else if (jumpPressed && ActionState == PlayerActionStates.Falling)
-        {
-            result = PlayerActionStates.Falling;
-        }
-        else if (jumpReleased && ActionState == PlayerActionStates.Jump)
-        {
-            DebugMessage("Jump is released...");
-
-            result = PlayerActionStates.Falling;
-        }
-        // ...Not jumping...
-        else
-        {
-            result = PlayerActionStates.Idle;
-
-            if (walkAmount > 0)
-                result = PlayerActionStates.Walk;
-            else if (walkAmount < 0)
-                result = PlayerActionStates.Backstep;
-
-            if (strafeAmount > 0)
-                result = PlayerActionStates.StrafeRight;
-            else
-                result = PlayerActionStates.StrafeLeft;
-        }
-
-        return result;
-    }
-
-    private void CalculateMovement()
-    {
-        _movement.ProcessPlanarMovement(PlanarMotion);
-
-        if (ActionState == PlayerActionStates.Jump)
+            
+        if (jumpHeld && _movement.IsJumping)
         {
             _movement.PerformJump();
         }
 
-        _movement.ApplyVelocity();
+        if(jumpReleased && _movement.IsJumping)
+        {
+            _movement.AbortJump();
+        }
+        
+        //result = PlayerActionStates.Idle;
+
+        //if (walkAmount > 0)
+        //    result = PlayerActionStates.Walk;
+        //else if (walkAmount < 0)
+        //    result = PlayerActionStates.Backstep;
+
+        //if (strafeAmount > 0)
+        //    result = PlayerActionStates.StrafeRight;
+        //else if (strafeAmount < 0)
+        //    result = PlayerActionStates.StrafeLeft;
+    }
+
+    private void PerformMovement()
+    {
+        _movement.ApplyVelocity(true);
+
+        if (_movement.IsGrounded)
+        {
+            JumpCount = MaxAllowedJumps;
+        }
     }
 
     private void CalculateAnimation()

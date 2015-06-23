@@ -19,6 +19,7 @@ public class MovementControls : DebuggableBehavior, ISuspendable
     public float WalkSpeed = 10.0f;
     public float JumpForce = 20.0f;
     public float JumpSmoothing = 0.25f;
+    public float FallSmoothing = 1.25f;
     public MovementType MovementType = MovementType.Grounded;
        
     // Mouse Look variables...
@@ -30,6 +31,7 @@ public class MovementControls : DebuggableBehavior, ISuspendable
     private Vector2 _currentRotation = new Vector2(0, 0);
 
     // Movement variables...
+    private float _jumpForce = 0.0f;
     private Vector3 _velocity = Vector3.zero;
     private CollisionFlags _collision;
 
@@ -107,6 +109,11 @@ public class MovementControls : DebuggableBehavior, ISuspendable
 
     public void ApplyVelocity(bool useDeltaTime = true)
     {
+        _jumpForce = _velocity.y;
+        _velocity += Physics.gravity;
+        if (MovementType == MovementType.Falling)
+            _velocity.y *= FallSmoothing;
+
         if(useDeltaTime)
             _velocity *= Time.deltaTime;
 
@@ -117,8 +124,9 @@ public class MovementControls : DebuggableBehavior, ISuspendable
             AbortJump();
         }
 
-        if(IsGrounded)
+        if (IsGrounded)
         {
+            _jumpForce = 0.0f;
             _velocity.y = 0.0f;
             MovementType = MovementType.Grounded;
         }
@@ -134,18 +142,19 @@ public class MovementControls : DebuggableBehavior, ISuspendable
 
     public void PerformJump()
     {
+        DebugMessage("Jumping, with a current state: " + MovementType);
+
         switch (MovementType)
         {
             case MovementType.Grounded:
             case MovementType.Falling:
-                DebugMessage("Jumping...");
                 _velocity.y += JumpForce;
                 MovementType = MovementType.Jumping;
                 break;
 
             case MovementType.Jumping:
-                DebugMessage("Ascending...");
-                _velocity.y *= JumpSmoothing;
+                _jumpForce *= JumpSmoothing;
+                _velocity.y += _jumpForce;
                 if(Mathf.Abs(_velocity.y - 0.0f) < 0.001f)
                 {
                     AbortJump();
@@ -157,8 +166,9 @@ public class MovementControls : DebuggableBehavior, ISuspendable
         }
     }
 
-    private void AbortJump()
+    public void AbortJump()
     {
+        _jumpForce = 0.0f;
         _velocity.y = 0.0f;
         MovementType = MovementType.Falling;
 
