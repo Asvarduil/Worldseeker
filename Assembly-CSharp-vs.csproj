@@ -86,8 +86,9 @@
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\System\HealthSystem.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Biome.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Door.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\IntVector3.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\Room.cs" />
-     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\RoomDoor.cs" />
+     <Compile Include="Assets\Game-Specific Assets\Scripts\Classes\World Generation\RoomCell.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\IJsonSavable.cs" />
      <Compile Include="Assets\Game-Specific Assets\Scripts\Interfaces\ISuspendable.cs" />
      <None Include="Assets\Standard Assets\Particles\Sources\Shaders\Particle Alpha Blend (Queue +100).shader" />
