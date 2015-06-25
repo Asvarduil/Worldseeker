@@ -14,7 +14,8 @@ public class RoomCell : IJsonSavable, ICloneable
 {
     #region Variables / Properties
 
-    public IntVector3 Position;
+    public Vector3 Position;
+    public Vector3 Rotation;
     public string MeshPath;
     public Mesh Mesh;
     public RoomCellType CellType;
@@ -36,6 +37,7 @@ public class RoomCell : IJsonSavable, ICloneable
         RoomCell result = new RoomCell
         {
             Position = this.Position,
+            Rotation = this.Rotation,
             MeshPath = this.MeshPath,
             Mesh = this.Mesh,
             CellType = this.CellType
@@ -46,7 +48,8 @@ public class RoomCell : IJsonSavable, ICloneable
 
     public void ImportState(JSONClass state)
     {
-        Position.ImportState(state["Position"].AsObject);
+        Position = state["Position"].ImportVector3();
+        Rotation = state["Rotation"].ImportVector3();
         MeshPath = state["MeshPath"];
         CellType = state["CellType"].ToEnum<RoomCellType>();
 
@@ -57,7 +60,8 @@ public class RoomCell : IJsonSavable, ICloneable
     {
         JSONClass state = new JSONClass();
 
-        state["Position"] = Position.ExportState();
+        state["Position"] = Position.ExportAsJson();
+        state["Rotation"] = Rotation.ExportAsJson();
         state["MeshPath"] = new JSONData(MeshPath);
         state["CellType"] = new JSONData(CellType.ToString());
 

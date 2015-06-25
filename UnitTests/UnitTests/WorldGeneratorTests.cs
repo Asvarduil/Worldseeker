@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using UnityEngine;
 
 namespace UnitTests
 {
@@ -36,16 +37,24 @@ namespace UnitTests
         public void AreConnectedRoomsProperlyDetected()
         {
             GivenTwoAdjacentRoomsExist();
-            bool areAdjacent = WhenIDetectIfTheRoomsAreAdjacent();
-            ThenTheRoomsAreAdjacent(areAdjacent);
+            bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
+            ThenTheRoomsAreAdjacent(areConnected);
         }
 
         [TestMethod]
-        public void AreDisconnectedProperlyDetected()
+        public void AreDisconnectedRoomsProperlyDetected()
         {
             GivenTwoDisjunctRoomsExist();
-            bool areAdjacent = WhenIDetectIfTheRoomsAreAdjacent();
-            ThenTheRoomsAreNotAdjacent(areAdjacent);
+            bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
+            ThenTheRoomsAreNotAdjacent(areConnected);
+        }
+
+        [TestMethod]
+        public void AreAdjacentNonFacingRoomsProperlyDetected()
+        {
+            GivenTwoAdjacentNonFacingRoomsExist();
+            bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
+            ThenTheRoomsAreNotAdjacent(areConnected);
         }
 
         #endregion Tests
@@ -55,15 +64,15 @@ namespace UnitTests
         // [1][!][2]
         private void GivenTwoOverlappingRoomsExist()
         {
-            var firstRoomPosition = new IntVector3();
-            var firstCellPosition = new IntVector3();
-            var leftCellPosition = new IntVector3
+            var firstRoomPosition = new Vector3();
+            var firstCellPosition = new Vector3();
+            var leftCellPosition = new Vector3
             {
                 x = -1,
                 y = 0,
                 z = 0
             };
-            var rightCellPosition = new IntVector3
+            var rightCellPosition = new Vector3
             {
                 x = 1,
                 y = 0,
@@ -84,7 +93,7 @@ namespace UnitTests
                 }
             };
 
-            var secondRoomPosition = new IntVector3
+            var secondRoomPosition = new Vector3
             {
                 x = 2,
                 y = 0,
@@ -122,21 +131,33 @@ namespace UnitTests
             };
         }
 
-        // [1][D][D][2]
+        // [1][D->][<-D][2]
         private void GivenTwoAdjacentRoomsExist()
         {
-            var firstRoomPosition = new IntVector3();
-            var firstCellPosition = new IntVector3();
-            var leftCellPosition = new IntVector3
+            var firstRoomPosition = new Vector3();
+            var firstCellPosition = new Vector3();
+            var leftCellPosition = new Vector3
             {
                 x = -1,
                 y = 0,
                 z = 0
             };
-            var rightCellPosition = new IntVector3
+            var leftCellRotation = new Vector3
+            {
+                x = 0,
+                y = 0,
+                z = 0
+            };
+            var rightCellPosition = new Vector3
             {
                 x = 1,
                 y = 0,
+                z = 0
+            };
+            var rightCellRotation = new Vector3
+            {
+                x = 0,
+                y = 180,
                 z = 0
             };
 
@@ -150,11 +171,12 @@ namespace UnitTests
                 new RoomCell
                 {
                     Position = rightCellPosition,
+                    Rotation = rightCellRotation,
                     CellType = RoomCellType.Door
                 }
             };
 
-            var secondRoomPosition = new IntVector3
+            var secondRoomPosition = new Vector3
             {
                 x = 3,
                 y = 0,
@@ -171,6 +193,91 @@ namespace UnitTests
                 new RoomCell
                 {
                     Position = leftCellPosition,
+                    Rotation = leftCellRotation,
+                    CellType = RoomCellType.Door
+                }
+            };
+
+            _firstRoom = new Room
+            {
+                Position = firstRoomPosition,
+                Name = "First Room",
+                Id = 0,
+                Cells = firstRoomCells
+            };
+
+            _secondRoom = new Room
+            {
+                Position = secondRoomPosition,
+                Name = "Second Room",
+                Id = 1,
+                Cells = secondRoomCells
+            };
+        }
+
+        // [1][<-D][D->][2]
+        private void GivenTwoAdjacentNonFacingRoomsExist()
+        {
+            var firstRoomPosition = new Vector3();
+            var firstCellPosition = new Vector3();
+            var leftCellPosition = new Vector3
+            {
+                x = -1,
+                y = 0,
+                z = 0
+            };
+            var leftCellRotation = new Vector3
+            {
+                x = 0,
+                y = 0,
+                z = 0
+            };
+            var rightCellPosition = new Vector3
+            {
+                x = 1,
+                y = 0,
+                z = 0
+            };
+            var rightCellRotation = new Vector3
+            {
+                x = 0,
+                y = 180,
+                z = 0
+            };
+
+            var firstRoomCells = new List<RoomCell>
+            {
+                new RoomCell
+                {
+                    Position = firstCellPosition,
+                    CellType = RoomCellType.Space
+                },
+                new RoomCell
+                {
+                    Position = rightCellPosition,
+                    Rotation = leftCellRotation,
+                    CellType = RoomCellType.Door
+                }
+            };
+
+            var secondRoomPosition = new Vector3
+            {
+                x = 3,
+                y = 0,
+                z = 0
+            };
+
+            var secondRoomCells = new List<RoomCell>
+            {
+                new RoomCell
+                {
+                    Position = firstCellPosition,
+                    CellType = RoomCellType.Space
+                },
+                new RoomCell
+                {
+                    Position = leftCellPosition,
+                    Rotation = rightCellRotation,
                     CellType = RoomCellType.Door
                 }
             };
@@ -195,15 +302,15 @@ namespace UnitTests
         // [D][1] *  * [2][D]
         private void GivenTwoDisjunctRoomsExist()
         {
-            var firstRoomPosition = new IntVector3();
-            var firstCellPosition = new IntVector3();
-            var leftCellPosition = new IntVector3
+            var firstRoomPosition = new Vector3();
+            var firstCellPosition = new Vector3();
+            var leftCellPosition = new Vector3
             {
                 x = -1,
                 y = 0,
                 z = 0
             };
-            var rightCellPosition = new IntVector3
+            var rightCellPosition = new Vector3
             {
                 x = 1,
                 y = 0,
@@ -224,7 +331,7 @@ namespace UnitTests
                 }
             };
 
-            var secondRoomPosition = new IntVector3
+            var secondRoomPosition = new Vector3
             {
                 x = 3,
                 y = 0,

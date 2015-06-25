@@ -11,7 +11,8 @@ public class Room : ICloneable, IJsonSavable
     public string Name;
     public int Id;
     public BiomeType BiomeType;
-    public IntVector3 Position;
+    public Vector3 Position;
+    public Vector3 Rotation;
     public List<RoomCell> Cells;
 
     private List<RoomCell> _roomDoors;
@@ -55,6 +56,7 @@ public class Room : ICloneable, IJsonSavable
             Name = this.Name,
             Id = this.Id,
             Position = this.Position,
+            Rotation = this.Rotation,
             Cells = this.Cells
         };
     }
@@ -64,7 +66,8 @@ public class Room : ICloneable, IJsonSavable
         Name = state["Name"];
         Id = state["Id"].AsInt;
 
-        Position.ImportState(state["Position"].AsObject);
+        Position = state["Position"].ImportVector3();
+        Rotation = state["Rotation"].ImportVector3();
         Cells = state["Cells"].AsArray.UnfoldJsonArray<RoomCell>();
     }
 
@@ -74,7 +77,8 @@ public class Room : ICloneable, IJsonSavable
 
         state["Name"] = new JSONData(Name);
         state["Id"] = new JSONData(Id);
-        state["Position"] = Position.ExportState();
+        state["Position"] = Position.ExportAsJson();
+        state["Rotation"] = Rotation.ExportAsJson();
         state["Cells"] = Cells.FoldList();
 
         return state;
@@ -97,12 +101,12 @@ public class Room : ICloneable, IJsonSavable
         for(int i = 0; i < a.Cells.Count; i++)
         {
             RoomCell current = a.Cells[i];
-            IntVector3 realPosition = a.Position + current.Position;
+            Vector3 realPosition = a.Position + current.Position;
 
             for(int j = 0; j < b.Cells.Count; j++)
             {
                 RoomCell suspect = b.Cells[j];
-                IntVector3 suspectPosition = b.Position + suspect.Position;
+                Vector3 suspectPosition = b.Position + suspect.Position;
 
                 overlapExists = (realPosition == suspectPosition);
                 if (overlapExists)
@@ -129,27 +133,52 @@ public class Room : ICloneable, IJsonSavable
         for (int i = 0; i < a.RoomDoors.Count; i++)
         {
             RoomCell current = a.RoomDoors[i];
-            IntVector3 realPosition = a.Position + current.Position;
+            Vector3 currentPosition = a.Position + current.Position;
+            Vector3 currentRotation = a.Rotation + current.Rotation;
 
             for(int j = 0; j < b.RoomDoors.Count; j++)
             {
                 RoomCell suspect = b.RoomDoors[j];
-                IntVector3 suspectPosition = b.Position + suspect.Position;
+                Vector3 suspectPosition = b.Position + suspect.Position;
+                Vector3 suspectRotation = b.Rotation + suspect.Rotation;
 
                 // We're now doing floating point math...
                 // Get the distance between the two cell positions.
                 // If that distance is not 1 world unit apart, the two doors are not adjacent.
-                float distance = IntVector3.Distance(realPosition, suspectPosition);
+                float distance = Vector3.Distance(currentPosition, suspectPosition);
                 bool areAdjacent = Mathf.Abs(distance - 1.0f) < 0.001f;
-                roomsJoined |= areAdjacent;
+
+                // Also, check that the two doors are facing each other.
+                Vector3 normalized = (currentRotation - suspectRotation).normalized;
+                float direction = Vector3.Dot(normalized, Vector3.up);
+                bool areFacing = Mathf.Approximately(direction, 1.0f);
+                                
+                roomsJoined |= areAdjacent && areFacing;
 
                 // Unit Test Debug code...
-                string message = string.Format("The doors at {0} and {1} {2} adjacent; the distance is {3}.", 
-                    realPosition, 
+                string stateMessage = string.Format(
+                    "The doors at {0} and {1} {2} adjacent, and {3} facing each other.", 
+                    currentPosition, 
                     suspectPosition, 
-                    (roomsJoined ? "are" : "aren't"),
-                    distance);
-                Console.WriteLine(message);
+                    (areAdjacent ? "are" : "aren't"),
+                    (areFacing ? "are" : "aren't")
+                );
+                
+                string distanceMessage = string.Format(
+                    "The distance between the rooms is {0} units",
+                    distance
+                );
+
+                string anglesMessage = string.Format(
+                    "The normalized magnitude between rotations {0} and {1} is {2}.",
+                    currentRotation,
+                    suspectRotation,
+                    direction
+                );
+
+                Console.WriteLine(stateMessage);
+                Console.WriteLine(distanceMessage);
+                Console.WriteLine(anglesMessage);
             }
         }
 
