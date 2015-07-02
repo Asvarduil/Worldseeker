@@ -1,14 +1,11 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Web
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-firstpass", "Assembly-CSharp-firstpass.csproj", "{E4F858E3-8BF3-EB9B-EBF2-F75382B8CB96}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2008
+
+Project("{008A5121-2BB5-BE01-0EEC-F89CC5B139AF}") = "Worldseeker", "Assembly-CSharp-firstpass.csproj", "{E4F858E3-8BF3-EB9B-EBF2-F75382B8CB96}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{0777B5D5-4CE9-7EC9-FB2F-6460451EBCEB}"
+Project("{008A5121-2BB5-BE01-0EEC-F89CC5B139AF}") = "Worldseeker", "Assembly-CSharp.csproj", "{0777B5D5-4CE9-7EC9-FB2F-6460451EBCEB}"
 EndProject
 Project("{008A5121-2BB5-BE01-0EEC-F89CC5B139AF}") = "Worldseeker", "Assembly-UnityScript-firstpass.unityproj", "{00C7E0EF-8460-15AF-9072-AAC36A42179F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests\UnitTests.csproj", "{F9DABD1B-F0D7-4A8D-860D-1091B26D4F49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,15 +25,11 @@ Global
 		{00C7E0EF-8460-15AF-9072-AAC36A42179F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{00C7E0EF-8460-15AF-9072-AAC36A42179F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{00C7E0EF-8460-15AF-9072-AAC36A42179F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F9DABD1B-F0D7-4A8D-860D-1091B26D4F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F9DABD1B-F0D7-4A8D-860D-1091B26D4F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F9DABD1B-F0D7-4A8D-860D-1091B26D4F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F9DABD1B-F0D7-4A8D-860D-1091B26D4F49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
+		GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Assembly-CSharp.csproj
 		Policies = $0
 		$0.TextStylePolicy = $3
@@ -54,4 +47,5 @@ Global
 		$3.inheritsScope = text/plain
 		$3.scope = text/plain
 	EndGlobalSection
+
 EndGlobal

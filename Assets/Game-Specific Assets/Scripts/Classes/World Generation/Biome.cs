@@ -14,7 +14,7 @@ public class Biome
 
     public string Name;
     public BiomeType Type;
-    public Vector3 Dimensions;
+    public int RoomCountCutoff;
 
     public List<Room> Rooms;
     public List<Door> Doors;

@@ -6,7 +6,7 @@ using UnityEngine;
 namespace UnitTests
 {
     [TestClass]
-    public class WorldGeneratorTests
+    public class RoomValidationTests
     {
         #region Variables / Properties
 
@@ -38,7 +38,7 @@ namespace UnitTests
         {
             GivenTwoAdjacentRoomsExist();
             bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
-            ThenTheRoomsAreAdjacent(areConnected);
+            ThenTheRoomsAreConnected(areConnected);
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace UnitTests
         {
             GivenTwoDisjunctRoomsExist();
             bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
-            ThenTheRoomsAreNotAdjacent(areConnected);
+            ThenTheRoomsAreNotConnected(areConnected);
         }
 
         [TestMethod]
@@ -54,12 +54,73 @@ namespace UnitTests
         {
             GivenTwoAdjacentNonFacingRoomsExist();
             bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
-            ThenTheRoomsAreNotAdjacent(areConnected);
+            ThenTheRoomsAreNotConnected(areConnected);
+        }
+
+        [TestMethod]
+        public void ArePerpendicularNonFacingRoomsProperlyDetected()
+        {
+            GivenTwoPerpendicularRoomsExist();
+            bool areConnected = WhenIDetectIfTheRoomsAreAdjacent();
+            ThenTheRoomsAreNotConnected(areConnected);
+        }
+
+        [TestMethod]
+        public void IsRoomTailLengthProperlyFound()
+        {
+            GivenARoomExists();
+            float tailLength = WhenIGetTheRoomsTailLength();
+            ThenTheRoomHasTheExpectedTailLength(tailLength, -1);
         }
 
         #endregion Tests
 
         #region Setup
+
+        //  <- Z --
+        // [ ][1][D->]
+        private void GivenARoomExists()
+        {
+            var forwardCellPosition = new Vector3
+            {
+                x = 0,
+                y = 0,
+                z = 1
+            };
+            var rearCellPosition = new Vector3
+            {
+                x = 0,
+                y = 0,
+                z = -1
+            };
+
+            var roomCells = new List<RoomCell>
+            {
+                new RoomCell
+                {
+                    Position = forwardCellPosition,
+                    CellType = RoomCellType.Occupied
+                },
+                new RoomCell
+                {
+                    Position = Vector3.zero,
+                    CellType = RoomCellType.Occupied
+                },
+                new RoomCell
+                {
+                    Position = rearCellPosition,
+                    CellType = RoomCellType.Door
+                }
+            };
+
+            _firstRoom = new Room
+            {
+                Name = "Test Room",
+                Id = 0,
+                Position = Vector3.zero,
+                Cells = roomCells
+            };
+        }
 
         // [1][!][2]
         private void GivenTwoOverlappingRoomsExist()
@@ -369,9 +430,89 @@ namespace UnitTests
             };
         }
 
+        // [1][D->]
+        // [2]
+        // [D]
+        // [|]
+        // [V]
+        private void GivenTwoPerpendicularRoomsExist()
+        {
+            var firstRoomPosition = new Vector3();
+            var firstCellPosition = new Vector3();
+            var rightCellPosition = new Vector3
+            {
+                x = 1,
+                y = 0,
+                z = 0
+            };
+
+            var firstRoomCells = new List<RoomCell>
+            {
+                new RoomCell
+                {
+                    Position = firstCellPosition,
+                    CellType = RoomCellType.Space
+                },
+                new RoomCell
+                {
+                    Position = rightCellPosition,
+                    CellType = RoomCellType.Door
+                }
+            };
+
+            var secondRoomPosition = new Vector3
+            {
+                x = 0,
+                y = 0,
+                z = -1
+            };
+            var secondRoomRotation = new Vector3
+            {
+                x = 0,
+                y = 90,
+                z = 0
+            };
+
+            var secondRoomCells = new List<RoomCell>
+            {
+                new RoomCell
+                {
+                    Position = firstCellPosition,
+                    CellType = RoomCellType.Space
+                },
+                new RoomCell
+                {
+                    Position = rightCellPosition,
+                    CellType = RoomCellType.Door
+                }
+            };
+
+            _firstRoom = new Room
+            {
+                Position = firstRoomPosition,
+                Name = "First Room",
+                Id = 0,
+                Cells = firstRoomCells
+            };
+
+            _secondRoom = new Room
+            {
+                Position = secondRoomPosition,
+                Rotation = secondRoomRotation,
+                Name = "Second Room",
+                Id = 1,
+                Cells = secondRoomCells
+            };
+        }
+
         #endregion Setup
 
         #region Actuation
+
+        private float WhenIGetTheRoomsTailLength()
+        {
+            return _firstRoom.TailLength;
+        }
 
         private bool WhenIDetectIfTheRoomsAreAdjacent()
         {
@@ -387,6 +528,14 @@ namespace UnitTests
 
         #region Validation
 
+        private void ThenTheRoomHasTheExpectedTailLength(float observed, float expected)
+        {
+            string message = string.Format("The observed tail length {0} was not the expected {1} units.",
+                observed,
+                expected);
+            Assert.IsTrue((observed == expected), message);
+        }
+
         private void ThenTheRoomsOverlap(bool areOverlapping)
         {
             Assert.IsTrue(areOverlapping, "The two rooms that overlap were somehow detected as disjunct from each other.");
@@ -397,12 +546,12 @@ namespace UnitTests
             Assert.IsFalse(areOverlapping, "The two rooms that are set up airgapped were somehow detected as being overlapping.");
         }
 
-        private void ThenTheRoomsAreAdjacent(bool areAdjacent)
+        private void ThenTheRoomsAreConnected(bool areAdjacent)
         {
             Assert.IsTrue(areAdjacent, "The two rooms that are set up with adjacent doors don't register as being connected by their doors.");
         }
 
-        private void ThenTheRoomsAreNotAdjacent(bool areAdjacent)
+        private void ThenTheRoomsAreNotConnected(bool areAdjacent)
         {
             Assert.IsFalse(areAdjacent, "The two rooms that are set up with their doors not adjacent were somehow detected as being adjacent.");
         }

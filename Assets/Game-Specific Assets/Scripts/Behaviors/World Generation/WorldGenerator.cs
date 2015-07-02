@@ -35,7 +35,7 @@ public class WorldGenerator : DebuggableBehavior
         if (Biomes[0] == null)
             throw new NullReferenceException("Please specify a first pre-defined biome for testing purposes.");
 
-        _biomeGenerator.GenerateBiome(Biomes[0].Dimensions, Biomes[0].Type);
+        _biomeGenerator.GenerateBiome(Biomes[0].RoomCountCutoff, Biomes[0].Type);
     }
 
     #endregion Methods

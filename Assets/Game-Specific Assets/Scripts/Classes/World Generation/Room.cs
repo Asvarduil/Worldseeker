@@ -3,6 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using SimpleJSON;
 
+public enum RoomType
+{
+    None,
+    Room,
+    Connector,
+    Terminus
+}
+
 [Serializable]
 public class Room : ICloneable, IJsonSavable
 {
@@ -10,6 +18,7 @@ public class Room : ICloneable, IJsonSavable
 
     public string Name;
     public int Id;
+    public RoomType RoomType;
     public BiomeType BiomeType;
     public Vector3 Position;
     public Vector3 Rotation;
@@ -37,6 +46,29 @@ public class Room : ICloneable, IJsonSavable
         }
     }
 
+    private bool _hasTailLength = false;
+    private float _tailLength;
+    public float TailLength
+    {
+        get
+        {
+            if (!_hasTailLength)
+            {
+                _tailLength = 0.0f;
+                for (int i = 0; i < Cells.Count; i++)
+                {
+                    RoomCell current = Cells[i];
+                    if (current.Position.z < _tailLength)
+                        _tailLength = current.Position.z;
+                }
+
+                _hasTailLength = true;
+            }
+
+            return _tailLength;
+        }
+    }
+
     #endregion Variables / Properties
 
     #region Constructor
@@ -55,6 +87,7 @@ public class Room : ICloneable, IJsonSavable
         {
             Name = this.Name,
             Id = this.Id,
+            RoomType = this.RoomType,
             Position = this.Position,
             Rotation = this.Rotation,
             Cells = this.Cells
@@ -65,6 +98,7 @@ public class Room : ICloneable, IJsonSavable
     {
         Name = state["Name"];
         Id = state["Id"].AsInt;
+        RoomType = state["RoomType"].ToEnum<RoomType>();
 
         Position = state["Position"].ImportVector3();
         Rotation = state["Rotation"].ImportVector3();
@@ -77,6 +111,7 @@ public class Room : ICloneable, IJsonSavable
 
         state["Name"] = new JSONData(Name);
         state["Id"] = new JSONData(Id);
+        state["RoomType"] = new JSONData(RoomType.ToString());
         state["Position"] = Position.ExportAsJson();
         state["Rotation"] = Rotation.ExportAsJson();
         state["Cells"] = Cells.FoldList();
